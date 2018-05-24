@@ -3,10 +3,6 @@
 
 ---
 
-
-
-## [Rubric](https://review.udacity.com/#!/rubrics/1534/view) Points
-
 ### Project Objective
 In this project, using a given motion planner simulator (flight controller), I create an autopilot model which guides a drone from a given starting point to a goal point. The drone has to fly safely through given obstacles. Here are the steps:
 
@@ -22,6 +18,15 @@ The model is implemented in two python files: motion_planning.py and planning_ut
 
 ### Creating Grid of Obstacles
 The drone needs to be precisely aware of the surrounding obstacles to fly safely.  The first step is to create a gird of obstacles, given the 2.5D provided in "colliders.csv" file.  The method 'create_grid' in planning_utils.py creates such a grid, in which coordinates are localized to the grid.
+
+<table style="width:100%">
+  <tr>
+    <th>Grid of Obstacles</th>
+  </tr>
+  <tr>
+    <td><img src="C:\Users\319977450\Pictures\fcnd\obstacles.png" width="500" height="400"/></td>
+  </tr>
+</table>
 
 ### Creating a Graph
 The next step is to create a graph on the grid, in which edges represent safe and feasible lines the drone can take as parts of the path from start to goal. The graph is created via the following steps:
