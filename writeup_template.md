@@ -6,7 +6,6 @@
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/1534/view) Points
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ### Project Objective
 In this project, using a given motion planner simulator (flight controller), I create an autopilot model which guides a drone from a given starting point to a goal point. The drone has to fly safely through given obstacles. Here are the steps:
@@ -18,66 +17,35 @@ In this project, using a given motion planner simulator (flight controller), I c
 5. Using a collinearity test or ray tracing method (like Bresenham) to remove unnecessary waypoints.
 6. Returning waypoints in local ECEF coordinates (format for `self.all_waypoints` is [N, E, altitude, heading], where the drone’s start location corresponds to [0, 0, 0, 0].
 
----
-### Writeup / README
+### Model Overview
+The model is implemented in two python files: motion_planning.py and planning_utils.py.  The MotionPlanning class extends the flight controller class (Drone), and therefore is the class which directly works with the Drone. It performs transitions between various states of the drone (Manual, Arming, Take off, Landing, Disarming). It also contains a function called ‘plan_path’ which is responsible for performing the steps described in Project Objective section with the help of auxiliary methods in planning_utils.py.
 
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  
+### Creating Grid of Obstacles
+The drone needs to be precisely aware of the surrounding obstacles to fly safely.  The first step is to create a gird of obstacles, given the 2.5D provided in "colliders.csv" file.  The method 'create_grid' in planning_utils.py creates such a grid, in which coordinates are localized to the grid.
 
-You're reading it! Below I describe how I addressed each rubric point and where in my code each point is handled.
+### Creating a Graph
+The next step is to create a graph on the grid, in which edges represent safe and feasible lines the drone can take as parts of the path from start to goal. The graph is created via the following steps:
 
-### Explain the Starter Code
+1. Creating a Voronoi Diagram on the Obstacle Grid: Using Vornoi, I partitioned the obstacle grid to regions, each containing one obstacle at its centre. Edges of these regions include points which are the furthest possible from the around obstacles.  As a result, the vertices of these regions are great candidates to be potentially the vertices of the graph I want to procure for my drone path.
+2. Vertices gained using Vornoi in the last step are used to create a graph for the drone's path. I used Bresenham method to approximate straight lines between Voronoi vertices. Lines that are not off the map and do not collide with any obstacles are chosen for the final path graph.
 
-#### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
+The steps described above for graph creation are implemented in the create_graph method in planning_utils.py.
 
-And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
-![Top Down View](./misc/high_up.png)
+### Setting Start and Goal Points
 
-Here's | A | Snappy | Table
---- | --- | --- | ---
-1 | `highlight` | **bold** | 7.41
-2 | a | b | c
-3 | *italic* | text | 403
-4 | 2 | 3 | abcd
+I set the start point the home position of the drone on the gird, and randomly chose another point on the grid as the goal point. After converting them to the local coordinates, I used the closest_poing method define in the planing_utils.py to find the closest points in my graph to the specified start and goal points
 
-### Implementing Your Path Planning Algorithm
+### Path Searching
 
-#### 1. Set your global home position
-Here students should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. Explain briefly how you accomplished this in your code.
+I used *__A-Star__* algorithm to find an optimal path through the graph, from start point (or more precisely from the closest vertex of the graph to the start point), to the goal. The implementation for A* is in planing_utils.py. 
 
+A-Star is a type of breadth-first search algorithm which tries to find the smallest path from an initial node to a goal node in a graph. It basically constructs a graph from the initial node, and expands the tree (i.e. partial paths) one step at a time, until at least one of the partial paths meet the goal. At each iteration, A* needs to decide which partial path(s) to expand. It does that based on the estimated cost for each partial path to get to the goal. The cost estimation is done using a heuristic function.
 
-And here is a lovely picture of our downtown San Francisco environment from above!
-![Map of SF](./misc/map.png)
+A-Star returns a list of the waypoints the drone need to go through to get to the goal.
 
-#### 2. Set your current local position
-Here as long as you successfully determine your local position relative to global home you'll be all set. Explain briefly how you accomplished this in your code.
+### Path Pruning 
 
+Once the path (waypoints) returned by A*, I performed a collinearity check on waypoints of the path in order to remove the redundant waypoints.  In other words, for each straight line in the path, we don't need more than 2 points (one at the beginning and one at the end of the line), therefore the waypoints in between get removed. Path pruning effectively reduces the number of stops and transitions the drone has to make passing through waypoints. Please see *prune_path* and *collinearity_check* in *planning_utils.py*.
 
-Meanwhile, here's a picture of me flying through the trees!
-![Forest Flying](./misc/in_the_trees.png)
-
-#### 3. Set grid start position from local position
-This is another step in adding flexibility to the start location. As long as it works you're good to go!
-
-#### 4. Set grid goal position from geodetic coords
-This step is to add flexibility to the desired goal location. Should be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
-
-#### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
-
-#### 6. Cull waypoints 
-For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
-
-
-
-### Execute the flight
-#### 1. Does it work?
-It works!
-
-### Double check that you've met specifications for each of the [rubric](https://review.udacity.com/#!/rubrics/1534/view) points.
-  
-# Extra Challenges: Real World Planning
-
-For an extra challenge, consider implementing some of the techniques described in the "Real World Planning" lesson. You could try implementing a vehicle model to take dynamic constraints into account, or implement a replanning method to invoke if you get off course or encounter unexpected obstacles.
 
 
