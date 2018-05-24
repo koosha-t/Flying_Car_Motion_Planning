@@ -21,7 +21,7 @@ The drone needs to be precisely aware of the surrounding obstacles to fly safely
 
 <table style="width:100%">
   <tr>
-    <th>Grid of Obstacles</th>
+    <th> Grid of Obstacles </th>
   </tr>
   <tr>
     <td><img src="./misc/obstacles.png" width="800" height="600"/></td>
@@ -47,6 +47,15 @@ I used *__A-Star__* algorithm to find an optimal path through the graph, from st
 A-Star is a type of breadth-first search algorithm which tries to find the smallest path from an initial node to a goal node in a graph. It basically constructs a graph from the initial node, and expands the tree (i.e. partial paths) one step at a time, until at least one of the partial paths meet the goal. At each iteration, A* needs to decide which partial path(s) to expand. It does that based on the estimated cost for each partial path to get to the goal. The cost estimation is done using a heuristic function.
 
 A-Star returns a list of the waypoints the drone need to go through to get to the goal.
+
+<table style="width:100%">
+  <tr>
+    <th> Graph, Start and Goal Points, and Path Found by A-Star </th>
+  </tr>
+  <tr>
+    <td><img src="./misc/path.png" width="800" height="600"/></td>
+  </tr>
+</table>
 
 ### Path Pruning 
 
