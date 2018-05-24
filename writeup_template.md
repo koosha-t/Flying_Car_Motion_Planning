@@ -24,7 +24,7 @@ The drone needs to be precisely aware of the surrounding obstacles to fly safely
     <th>Grid of Obstacles</th>
   </tr>
   <tr>
-    <td><img src="./misc/obstacles.png" width="500" height="400"/></td>
+    <td><img src="./misc/obstacles.png" width="800" height="600"/></td>
   </tr>
 </table>
 
