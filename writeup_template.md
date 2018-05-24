@@ -50,7 +50,7 @@ A-Star returns a list of the waypoints the drone need to go through to get to th
 
 <table style="width:100%">
   <tr>
-    <th> Graph, Start and Goal Points, and Path Found by A-Star </th>
+    <th> Graph (in blue), Start and Goal Points (green cross signs), and Path Found by A-Star (in red) </th>
   </tr>
   <tr>
     <td><img src="./misc/path.png" width="800" height="600"/></td>
